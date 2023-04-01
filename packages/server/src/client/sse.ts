@@ -9,7 +9,7 @@ import dayjs from 'dayjs'
  * ChatGPTAPI构造
  */
 const api = new ChatGPTAPI({
-  apiKey: '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',
+  apiKey: process.env.API_KEY!,
   fetch: (url, option) =>
     nodeFetch(
       url as any,
