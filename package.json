@@ -1,0 +1,34 @@
+{
+  "name": "chatgpt",
+  "version": "1.0.0",
+  "author": "LaiBaoYuan",
+  "private": true,
+  "packageManager": "pnpm@7.18.2",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LaiBaoYuan/chatgpt-public.git"
+  },
+  "keywords": [
+    "chatgpt"
+  ],
+  "bugs": {
+    "url": "https://github.com/LaiBaoYuan/chatgpt-public/issues"
+  },
+  "homepage": "https://github.com/LaiBaoYuan/chatgpt-public#readme",
+  "scripts": {
+    "dev:client": "pnpm -F client dev",
+    "dev:server": "pnpm -F server dev",
+    "build:client:dev": "pnpm -F client build:dev",
+    "build:client:prod": "pnpm -F client build:prod",
+    "preinstall": "node ./scripts/preinstall.js"
+  },
+  "devDependencies": {
+    "dayjs": "^1.11.7",
+    "@types/node": "^18.15.3",
+    "prettier": "^2.8.5",
+    "typescript": "^4.9.3",
+    "nodemon": "^2.0.21",
+    "ts-node": "^10.9.1"
+  }
+}

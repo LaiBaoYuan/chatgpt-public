@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "typeRoots": [
+      "../../node_modules/@types",
+      "./node_modules/@types",
+      "./src/types"
+    ]
+  },
+  "include": ["../global.d.ts", "./src/**/*.ts", "./src/index.d.ts", "index.ts", "index.ts"],
+  "ts-node": {
+    "files": true
+  }
+}

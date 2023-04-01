@@ -1,0 +1,27 @@
+version: '3'
+services:
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - 6379:6379
+  clash:
+    image: dreamacro/clash:latest
+    restart: always
+    # 默认7890代理端口
+    ports:
+      - 7890:7890
+    # 挂在vpn代理配置文件，一般代理商都会给你订阅地址，直接下载即可
+    volumes:
+      - $HOME/.config/clash:/root/.config/clash/
+  client-server:
+    build: 
+      context: .
+      args:
+        - ENV=dev
+    ports:
+      - 5173:5173 # 前端端口
+      - 9000:9000 # 后端端口
+    depends_on:
+      - redis
+      - clash
