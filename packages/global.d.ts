@@ -17,7 +17,6 @@ interface RoomItem {
   title: string
   conversations: MsgItem[]
 }
-
 declare module 'express-sse' {
   import { EventEmitter } from 'events'
 

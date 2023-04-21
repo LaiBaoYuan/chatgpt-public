@@ -99,7 +99,7 @@
             v-else
             class="py-2 px-3 border text-gray-600 rounded-md text-sm dark:text-gray-100 border-red-500 bg-red-500/10"
           >
-            {{ msg.error }}
+            系统服务发生异常
           </div>
         </div>
         <div class="flex justify-between"></div>

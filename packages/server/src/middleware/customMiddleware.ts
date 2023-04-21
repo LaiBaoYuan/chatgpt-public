@@ -7,11 +7,11 @@ const CustomMiddleware: RequestHandler = async (req, res, next) => {
       req.sessionStore.get(req.sessionID, (err, session) => {
         chatMap.set(
           req.sessionID,
-          !err && session && session.conversations ? session.conversations : []
+          !err && session && session.rooms ? session.rooms : []
         )
       })
     }
-    req.session.conversations = chatMap.get(req.sessionID)
+    req.session.rooms = chatMap.get(req.sessionID)
     req.session.ip =
       (req.headers['x-real-ip'] as string) ||
       (req.headers['x-forwarded-for'] as string) ||

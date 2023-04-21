@@ -13,10 +13,9 @@ const api = new ChatGPTAPI({
   fetch: (url, option) =>
     nodeFetch(
       url as any,
-      { agent: proxy('http://clash:7890'), ...option } as any
+      { agent: proxy('http://localhost:7890'), ...option } as any
     ) as any
 })
-
 
 /**
  * ChatGPTUnofficialProxyAPI构造
@@ -29,7 +28,6 @@ const api = new ChatGPTAPI({
 //       { agent: proxy('http://clash:7890'), ...option } as any
 //     ) as any
 // })
-
 export interface ClientType {
   id: string
   sse: SSE
@@ -121,7 +119,7 @@ export const sseInstance = class {
       }
     } catch (error) {
       console.error(error)
-      msg.error = '系统服务发生异常，可以尝试刷新页面或关注公众号联系开发者本人'
+      msg.error = true
       msg.loading = false
       req.session.save()
       client!.controller = undefined

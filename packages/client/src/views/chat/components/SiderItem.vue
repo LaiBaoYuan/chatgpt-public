@@ -11,10 +11,7 @@
     <div
       class="flex-1 text-ellipsis max-h-5 overflow-hidden break-all relative"
     >
-      {{
-        (room.conversations.length && room.conversations[0].send_content) ||
-        room.title
-      }}
+      {{ room.title }}
       <div
         :class="[
           'absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l',
@@ -30,10 +27,7 @@
         isActive ? ' visible' : 'invisible'
       ]"
     >
-      <button
-        class="p-1 hover:text-white"
-        @click="deleteConversatiuon(room.id)"
-      >
+      <button class="p-1 hover:text-white" @click="$emit('delete')">
         <svg-icon icon-class="Delete" class="w-4 h-4"></svg-icon>
       </button>
     </div>
@@ -41,10 +35,13 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ room: RoomItem; isActive: boolean }>()
-const deleteConversatiuon = inject<{ (id: string): void }>(
-  'deleteConversatiuon'
-)!
+defineProps<{
+  room: RoomItem
+  isActive: boolean
+}>()
+defineEmits<{
+  (e: 'delete'): void
+}>()
 </script>
 
 <style scoped></style>

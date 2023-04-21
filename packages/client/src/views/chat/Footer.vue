@@ -40,7 +40,7 @@
             </button>
             <button
               v-else-if="isShowStop"
-              @click="handleCancel"
+              @click="chatAPI.cancelMessage"
               class="btn relative btn-neutral border-0 md:border"
             >
               <div class="flex w-full items-center justify-center gap-2">
@@ -85,7 +85,7 @@
             </button>
             <button
               v-else-if="isShowStop"
-              @click="handleCancel"
+              @click="chatAPI.cancelMessage"
               class="btn relative btn-neutral border-0 md:border"
             >
               <div class="flex w-full items-center justify-center gap-2">
@@ -118,10 +118,92 @@
 </template>
 
 <script setup lang="ts">
-import { cancel } from '@/api'
+// import { cancel } from '@/api'
+// const props = defineProps<{ modalValue: string }>()
+// const rooms = inject('rooms', reactive<RoomItem[]>([]))
+// let currentIndex = inject('currentIndex', ref(-1))
+// let loading = inject('loading', ref(false))
+// let timer = ref<NodeJS.Timeout | null>(null)
+// let pointNum = ref(1)
+
+// const textarea = ref<HTMLElement>()
+
+// const isShowRegenerate = computed(
+//   () =>
+//     currentIndex.value !== -1 &&
+//     rooms[currentIndex.value].conversations.length &&
+//     rooms[currentIndex.value].conversations.every((v) => !v.loading) &&
+//     !loading.value
+// )
+
+// const isShowStop = computed(
+//   () =>
+//     currentIndex.value !== -1 &&
+//     rooms[currentIndex.value].conversations.length &&
+//     rooms[currentIndex.value].conversations.some((v) => v.loading)
+// )
+
+// const hasError = computed(() =>
+//   rooms[currentIndex.value]?.conversations.some((v) => v.error)
+// )
+
+// const emits = defineEmits<{
+//   (e: 'update:modalValue', val: string): void
+//   (e: 'confirm'): void
+//   (e: 'regenerate'): void
+// }>()
+// const handleInput = (e: Event) => {
+//   emits('update:modalValue', (e.target as HTMLInputElement).value)
+//   autoResizeTextarea()
+// }
+// const handleConfirm = (e: Event) => {
+//   if ((e as KeyboardEvent).keyCode === 13) {
+//     emits('confirm')
+//     e.preventDefault()
+//     autoResizeTextarea()
+//   }
+// }
+
+// const handleCancel = () => {
+//   cancel().then((res) => {})
+// }
+
+// const autoResizeTextarea = () => {
+//   if (textarea.value) {
+//     nextTick(() => {
+//       textarea.value!.style.height = 'auto'
+//       textarea.value!.style.height = `${textarea.value!.scrollHeight}px`
+//     })
+//   }
+// }
+
+// onMounted(() => {
+//   nextTick(() => {
+//     autoResizeTextarea()
+//   })
+// })
+
+// watch(props, () => {
+//   autoResizeTextarea()
+// })
+
+// watch(loading, (val) => {
+//   if (val) {
+//     timer.value = setInterval(() => {
+//       if (pointNum.value++ > 2) {
+//         pointNum.value = 1
+//       }
+//     }, 300)
+//   } else {
+//     clearInterval(timer.value!)
+//     timer.value = null
+//   }
+// })
+import { chatAPI } from '@/api'
+import { useAppStore } from '@/store'
+const store = useAppStore()
 const props = defineProps<{ modalValue: string }>()
-const rooms = inject('rooms', reactive<RoomItem[]>([]))
-let currentIndex = inject('currentIndex', ref(-1))
+const { curIndex, conversations } = toRefs(store.state.chat)
 let loading = inject('loading', ref(false))
 let timer = ref<NodeJS.Timeout | null>(null)
 let pointNum = ref(1)
@@ -130,22 +212,20 @@ const textarea = ref<HTMLElement>()
 
 const isShowRegenerate = computed(
   () =>
-    currentIndex.value !== -1 &&
-    rooms[currentIndex.value].conversations.length &&
-    rooms[currentIndex.value].conversations.every((v) => !v.loading) &&
+    curIndex.value !== -1 &&
+    conversations.value.length &&
+    conversations.value.every((v) => !v.loading) &&
     !loading.value
 )
 
 const isShowStop = computed(
   () =>
-    currentIndex.value !== -1 &&
-    rooms[currentIndex.value].conversations.length &&
-    rooms[currentIndex.value].conversations.some((v) => v.loading)
+    curIndex.value !== -1 &&
+    conversations.value.length &&
+    conversations.value.some((v) => v.loading)
 )
 
-const hasError = computed(() =>
-  rooms[currentIndex.value]?.conversations.some((v) => v.error)
-)
+const hasError = computed(() => conversations.value.some((v) => v.error))
 
 const emits = defineEmits<{
   (e: 'update:modalValue', val: string): void
@@ -162,10 +242,6 @@ const handleConfirm = (e: Event) => {
     e.preventDefault()
     autoResizeTextarea()
   }
-}
-
-const handleCancel = () => {
-  cancel().then((res) => {})
 }
 
 const autoResizeTextarea = () => {

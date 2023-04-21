@@ -1,7 +1,7 @@
 export {}
 declare module 'express-session' {
   interface SessionData {
-    conversations: RoomItem[]
+    rooms: RoomItem[]
     ip: string
   }
 }

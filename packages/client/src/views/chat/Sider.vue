@@ -10,7 +10,7 @@
         <nav class="flex h-full flex-1 flex-col space-y-1 p-2">
           <a
             class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm mb-2 flex-shrink-0 border border-white/20"
-            @click="handleClickSiderItem(() => handleAddRoom())"
+            @click="handleClickSiderItem(() => store.dispatch('chat/addRoom'))"
           >
             <svg-icon icon-class="Plus" class="w-4 h-4"></svg-icon>
             创建会话
@@ -24,17 +24,26 @@
           >
             <div class="flex flex-col gap-2 text-gray-100 text-sm">
               <sider-item
-                v-for="(v, i) in rooms"
-                :key="i"
-                :is-active="currentIndex === i"
-                :room="v"
-                @click="handleClickSiderItem(() => (currentIndex = i))"
+                v-for="(value, index) in rooms"
+                :key="index"
+                :is-active="curIndex === index"
+                :room="value"
+                @click="
+                  handleClickSiderItem(() =>
+                    store.commit('chat/SET_INDEX', index)
+                  )
+                "
+                @delete="
+                  store.dispatch('chat/deleteRoom', { id: value.id, index })
+                "
               />
             </div>
           </div>
           <a
             class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm"
-            @click="handleClickSiderItem(() => $emit('clear'))"
+            @click="
+              handleClickSiderItem(() => store.dispatch('chat/clearRooms'))
+            "
           >
             <svg-icon icon-class="Delete" class="w-4 h-4"></svg-icon
             >清除所有会话
@@ -42,8 +51,8 @@
           <a
             class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm"
             @click="
-              handleClickSiderItem(
-                () => (mode = mode === 'Dark' ? 'Light' : 'Dark')
+              handleClickSiderItem(() =>
+                store.commit('app/SET_MODE', mode === 'Dark' ? 'Light' : 'Dark')
               )
             "
           >
@@ -54,52 +63,84 @@
       </div>
     </div>
   </div>
+  <div
+    v-if="collapsed"
+    class="fixed inset-0 bg-gray-600 bg-opacity-75 opacity-100 z-30"
+    @click="collapsed = false"
+  ></div>
 </template>
 
 <script setup lang="ts">
+// import { SiderItem } from './components'
+// const rooms = inject('rooms', ref<RoomItem[]>([]))
+// let currentIndex = inject('currentIndex', ref(-1))
+// let collapsed = inject('collapsed', ref(false))
+// let handleAddRoom = inject<{ (): void }>('handleAddRoom')!
+// let hasScrollBar = ref(false)
+// defineEmits<{ (e: 'clear'): void }>()
+// let mode = ref<'Dark' | 'Light'>(
+//   localStorage.theme === 'dark' ||
+//     (!('theme' in localStorage) &&
+//       window.matchMedia('(prefers-color-scheme: dark)').matches)
+//     ? 'Dark'
+//     : 'Light'
+// )
+
+// const handleResize = () => (collapsed.value = false)
+
+// const handleClickSiderItem = (fn: Function) => {
+//   fn()
+//   collapsed.value = false
+// }
+
+// onMounted(() => window.addEventListener('resize', handleResize))
+// onUnmounted(() => window.removeEventListener('resize', handleResize))
+
+// watch(
+//   mode,
+//   (val) => {
+//     if (val === 'Dark') {
+//       document.documentElement.classList.add('dark')
+//     } else {
+//       document.documentElement.classList.remove('dark')
+//     }
+//     localStorage.theme = val.toLocaleLowerCase()
+//   },
+//   { immediate: true }
+// )
+// watch(rooms, () => {
+//   nextTick(() => {
+//     let container = document.getElementById('sider-scroll-container')
+//     hasScrollBar.value = container!.clientHeight < container!.scrollHeight
+//   })
+// })
+
+import { useAppStore } from '@/store'
 import { SiderItem } from './components'
-const rooms = inject('rooms', ref<RoomItem[]>([]))
-let currentIndex = inject('currentIndex', ref(-1))
-let collapsed = inject('collapsed', ref(false))
-let handleAddRoom = inject<{ (): void }>('handleAddRoom')!
-let hasScrollBar = ref(false)
 defineEmits<{ (e: 'clear'): void }>()
-let mode = ref<'Dark' | 'Light'>(
-  localStorage.theme === 'dark' ||
-    (!('theme' in localStorage) &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ? 'Dark'
-    : 'Light'
-)
-
-const handleResize = () => (collapsed.value = false)
-
+const store = useAppStore()
+const { collapsed, mode } = toRefs(store.state.app)
+const { rooms, curIndex } = toRefs(store.state.chat)
+let hasScrollBar = ref(false)
 const handleClickSiderItem = (fn: Function) => {
   fn()
-  collapsed.value = false
+  store.commit('app/SET_COLLAPSED', false)
 }
 
+const handleResize = () => store.commit('app/SET_COLLAPSED', false)
 onMounted(() => window.addEventListener('resize', handleResize))
 onUnmounted(() => window.removeEventListener('resize', handleResize))
 
 watch(
-  mode,
-  (val) => {
-    if (val === 'Dark') {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-    localStorage.theme = val.toLocaleLowerCase()
+  rooms,
+  () => {
+    nextTick(() => {
+      let container = document.getElementById('sider-scroll-container')
+      hasScrollBar.value = container!.clientHeight < container!.scrollHeight
+    })
   },
-  { immediate: true }
+  { deep: true, immediate: true }
 )
-watch(rooms, () => {
-  nextTick(() => {
-    let container = document.getElementById('sider-scroll-container')
-    hasScrollBar.value = container!.clientHeight < container!.scrollHeight
-  })
-})
 </script>
 
 <style scoped></style>

@@ -8,6 +8,7 @@ import { sseInstance } from './sse'
 export const sse = new sseInstance()
 
 const server = Express()
+server.use(bodyParser.urlencoded({ extended: false }))
 server.use(bodyParser.json())
 server.all('*', CrosMiddleware)
 server.use(SessionMiddleware)
